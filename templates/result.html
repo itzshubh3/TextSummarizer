@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUMMARY RESULT</title>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Open Sans', sans-serif; /* Match font with Text Summarizer */
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            background-color: #4a90e2; /* Blue for light mode */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative; /* Add for positioning */
+            transition: background-color 0.3s ease;
+        }
+
+        /* Toggle Button Position to the right */
+        header .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 34px;
+        }
+
+        header .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        header .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        header .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            border-radius: 50%;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #4a90e2; /* Blue for light mode */
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .dark-mode {
+            background-color: #333;
+            color: #f0f2f5;
+        }
+
+        .dark-mode header {
+            background-color: #168245; /* Dark green for dark mode */
+        }
+
+        .dark-mode main {
+            background-color: #444;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode h2, .dark-mode h2 {
+            color: #e2e2e2; /* Light color for headings in dark mode */
+        }
+
+        .dark-mode a {
+            color: #e2e2e2; /* Light color for links in dark mode */
+        }
+
+        .dark-mode .keywords p {
+            color: #ffffff; /* White color for keywords in dark mode */
+        }
+
+        .dark-mode .ask-bot-button, .dark-mode .copy-button {
+            background-color: #2c6e49; /* Dark green for buttons in dark mode */
+        }
+
+        .dark-mode .ask-bot-button:hover, .dark-mode .copy-button:hover {
+            background-color: #1f5c3b;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        h1, h2 {
+            margin: 0;
+            font-size: 2em;
+            text-transform: uppercase; /* Make headings capitalized */
+            color: white; /* White color for headings in light mode */
+            font-family: 'Merriweather', serif; /* Match font with Text Summarizer */
+        }
+
+        .summary, .keywords {
+            color: #477ab5; /* Blue color for headings in light mode */
+        }
+
+        .summary {
+            margin-bottom: 20px;
+            text-align: left; /* Left-aligned content */
+        }
+
+        .summary p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #000; /* Change the color to black */
+        }
+
+        .keywords {
+            margin-bottom: 20px;
+        }
+
+        .keywords p {
+            font-weight: bold;
+            color: rgb(7, 7, 7); /* Dark color for keywords in light mode */
+            letter-spacing: 2px;
+            word-spacing: 10px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1.1em;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #4a90e2; /* Blue for light mode */
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .ask-bot-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #4a90e2; /* Blue for light mode */
+            color: white;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .ask-bot-button:hover {
+            background-color: #357ab7;
+        }
+
+        .copy-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4a90e2; /* Blue for light mode */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; /* Adjust spacing from the summary */
+        }
+
+        .copy-button:hover {
+            background-color: #357ab7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SUMMARY RESULT</h1>
+        <label class="switch">
+            <input type="checkbox" id="mode-toggle">
+            <span class="slider"></span>
+        </label>
+    </header>
+    <main>
+        <h2 class="summary-heading">SUMMARY</h2>
+        <div class="summary">
+            {% if summary %}
+                <div id="summary-text">{{ summary|safe }}</div>
+                <button class="copy-button" onclick="copyToClipboard('#summary-text')">Copy</button>
+            {% else %}
+                <p class="error-message">No summary available.</p>
+            {% endif %}
+        </div>
+
+        <h2 class="keywords-heading">KEYWORDS</h2>
+        <div class="keywords">
+            {% if keywords %}
+                <p>{{ keywords|join(' ')|upper }}</p>
+            {% else %}
+                <p class="error-message">No keywords available.</p>
+            {% endif %}
+        </div>
+
+        <button class="ask-bot-button" onclick="window.location.href='/ask_chatbot?original_text={{ original_text|urlencode }}'">Ask the Bot</button>
+        
+        <a href="/">Back to Home</a>
+        
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modeToggle = document.getElementById('mode-toggle');
+            const body = document.body;
+            const header = document.querySelector('header');
+            const headings = document.querySelectorAll('h1, h2');
+            const links = document.querySelectorAll('a');
+            const buttons = document.querySelectorAll('.ask-bot-button, .copy-button');
+            const summaryHeading = document.querySelector('.summary-heading');
+            const keywordsHeading = document.querySelector('.keywords-heading');
+
+            // Check local storage for theme preference
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme) {
+                body.classList.toggle('dark-mode', currentTheme === 'dark');
+                header.style.backgroundColor = currentTheme === 'dark' ? '#168245' : '#4a90e2';
+                headings.forEach(h => h.style.color = currentTheme === 'dark' ? '#e2e2e2' : 'white');
+                summaryHeading.style.color = currentTheme === 'dark' ? '#4a90e2' : '#4a90e2'; // Blue color for headings
+                keywordsHeading.style.color = currentTheme === 'dark' ? '#4a90e2' : '#4a90e2'; // Blue color for headings
+                links.forEach(a => a.style.color = currentTheme === 'dark' ? '#e2e2e2' : '#4a90e2');
+                buttons.forEach(btn => btn.style.backgroundColor = currentTheme === 'dark' ? '#2c6e49' : '#4a90e2');
+                modeToggle.checked = currentTheme === 'dark';
+            }
+
+            // Toggle theme and save to local storage
+            modeToggle.addEventListener('change', function () {
+                if (modeToggle.checked) {
+                    body.classList.add('dark-mode');
+                    header.style.backgroundColor = '#168245'; // Dark green for dark mode
+                    headings.forEach(h => h.style.color = '#e2e2e2'); // Light color for headings in dark mode
+                    summaryHeading.style.color = '#4a90e2'; // Blue for headings in dark mode
+                    keywordsHeading.style.color = '#4a90e2'; // Blue for headings in dark mode
+                    links.forEach(a => a.style.color = '#e2e2e2'); // Light color for links in dark mode
+                    buttons.forEach(btn => btn.style.backgroundColor = '#2c6e49'); // Dark green for buttons in dark mode
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    header.style.backgroundColor = '#4a90e2'; // Blue for light mode
+                    headings.forEach(h => h.style.color = 'white'); // White color for headings in light mode
+                    summaryHeading.style.color = '#4a90e2'; // Blue for headings in light mode
+                    keywordsHeading.style.color = '#4a90e2'; // Blue for headings in light mode
+                    links.forEach(a => a.style.color = '#4a90e2'); // Blue for links in light mode
+                    buttons.forEach(btn => btn.style.backgroundColor = '#4a90e2'); // Blue for buttons in light mode
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+        });
+
+        function copyToClipboard(selector) {
+            var copyText = document.querySelector(selector).innerText;
+            var tempTextArea = document.createElement('textarea');
+            tempTextArea.value = copyText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            alert('Summary copied to clipboard!');
+        }
+    </script>
+</body>
+</html>
